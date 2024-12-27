@@ -5,7 +5,7 @@
  * r_attenu - execute programs according to the pressed remote control buttons,
  *		handle button events and control relay attenuator.
  *
- * Based on irexec by Trent Piepho <xyzzy@u.washington.edu> 
+ * Based on irexec by Trent Piepho <xyzzy@u.washington.edu>
  *		     Christoph Bartelmus <lirc@bartelmus.de>
  *
  */
@@ -39,7 +39,7 @@
 #include <lirc/lirc_client.h>
 #include <signal.h>
 #include <limits.h>
-#include <stdbool.h> 
+#include <stdbool.h>
 
 void print_usage(char *prog)
 {
@@ -116,7 +116,7 @@ static char *get_config(struct lirc_config *config, char *button)
 			return code_config->string;
 		}
 		scan = scan->next;
-	}	
+	}
 	return NULL;
 }
 
@@ -351,8 +351,8 @@ static void ra_mute(int fd)
 }
 
 static int ra_vol_inc(int fd)
-{ 
-	if (vol >= 0x3f) 
+{
+	if (vol >= 0x3f)
 	{
 		return(1);
 	}
@@ -402,7 +402,7 @@ inline static int ra_vol_get()
 
 void send_key(char *string, int num)
 {
-	snprintf(buff, 257, "%s %016llx %02x %s %s\n", 
+	snprintf(buff, 257, "%s %016llx %02x %s %s\n",
 			"SIMULATE", (unsigned long long)
 			((config_remotes->pre_data << 16) | (ptr[num]->code)),
 			00, ptr[num]->name, config_remotes->name);
@@ -421,7 +421,7 @@ int open_socket(char *path)
 	strcpy(serv_addr.sun_path, path);
 	servlen=strlen(serv_addr.sun_path) +
 		sizeof(serv_addr.sun_family);
-	unlink(path); 
+	unlink(path);
 	if(bind(sockfd, (struct sockaddr *)&serv_addr, servlen)<0)
 		perror("binding socket");
 	listen(sockfd, 5);
@@ -578,7 +578,7 @@ void process_input(struct lirc_config* config)
 				//printf("\n code: %s ",code);
 				r = lirc_code2char(config, code, &string);
 				while (r == 0 && string != NULL) {
-					if(strcasecmp(string, "hardware_control") == 0) 
+					if(strcasecmp(string, "hardware_control") == 0)
 						process_IR_input(code);
 					else
 						system(string);
@@ -607,8 +607,8 @@ void process_input(struct lirc_config* config)
 					//printf ("DATA from client:%s\n", buffer);
 					retu = process_hw_input(buffer);
 					w_soc= write(sd, retu, strlen(retu));
-					if (w_soc < 0) 
-						perror("ERROR: writing to socket"); 
+					if (w_soc < 0)
+						perror("ERROR: writing to socket");
 				}
 			}
 		}
@@ -620,7 +620,7 @@ void process_event(void)
 {
 	char *string;
 	int swStatus;
-	
+
 	swStatus = ra_read(swFd);
         //printf(" %x \n",swStatus); //debug
 	switch (swStatus)
@@ -637,10 +637,10 @@ void process_event(void)
 				if (strstr(string, "hardware_control"))
 					ra_mute(rlyFd);
 				else
-					send_key(string, 0); 
-			} 
+					send_key(string, 0);
+			}
 		}
-		break;		
+		break;
 
 	case 0xfd: // Vol dec
 		if(!ir_Enable)
@@ -648,7 +648,7 @@ void process_event(void)
 		else
 		{
 			string = get_config(config, "BUTTON3");
-			//printf(" %s \n",string);	
+			//printf(" %s \n",string);
 			if (string == NULL) {
 				printf("\n NULL string \n");
 			} else {
@@ -658,7 +658,7 @@ void process_event(void)
 					send_key(string,2);
 			}
 		}
-		break; 
+		break;
 
 	case 0xfe: // Vol inc
 		if(!ir_Enable)
@@ -666,7 +666,7 @@ void process_event(void)
 		else
 		{
 			string = get_config(config, "BUTTON4");
-			//printf(" %s \n",string);	
+			//printf(" %s \n",string);
 			if (string == NULL) {
 				printf("\n NULL string \n");
 			} else {
@@ -675,7 +675,7 @@ void process_event(void)
 				else
 					send_key(string,3);
 			}
-		}	
+		}
 		break;
 
 	case 0xfb: // Play/Pause
@@ -697,7 +697,7 @@ void process_event(void)
 
 	default:
 		break;
-	} 
+	}
 }
 
 
@@ -739,7 +739,7 @@ static int socket_communication_for_switch(void)
 		fprintf(stderr, "Could not open socket\n");
 		return -1;
 	};
-	if (connect(fd_soc,(struct sockaddr *)&addr_un, sizeof(addr_un)) == -1) 
+	if (connect(fd_soc,(struct sockaddr *)&addr_un, sizeof(addr_un)) == -1)
 	{
 		fprintf(stderr, "Could not connect to socket\n");
 		return -1;
@@ -768,11 +768,11 @@ int lircd_config_read(char *argv)
 	config_remotes = read_config(fd, argv);
 	fclose(fd);
 
-	if (config_remotes != NULL) 
+	if (config_remotes != NULL)
 	{
 		if (socket_communication_for_switch() == -1)
 			fprintf(stderr, "Socket connection failed with: %s\n", argv);
-	}       
+	}
 	else {
 		fprintf(stderr, "Failed to read Remote configuration\n");
 		lirc_deinit();
@@ -796,7 +796,7 @@ int lircrc_config_read(char *argv)
 		}
 		return 0;
 	}
-	return -1; 
+	return -1;
 }
 
 
@@ -843,7 +843,7 @@ int main(int argc, char* argv[])
 
 	if (ir_Enable)
 	{
-		if ((lircd_config_read(opt_lircdconfig)<0) || 
+		if ((lircd_config_read(opt_lircdconfig)<0) ||
 			(lircrc_config_read(optind != argc ? argv[optind] : NULL)<0))
 			return EXIT_FAILURE;
 	}
@@ -859,19 +859,19 @@ int main(int argc, char* argv[])
 				close(fd_soc);
 				close(lircfd);
 			}
-			unlink(UNIX_SOCK_PATH); 
+			unlink(UNIX_SOCK_PATH);
 			close(rafd);
 			exit(EXIT_FAILURE);
 		}
 	}
 
 	if (wiringPiISR (INT_GPIO, INT_EDGE_FALLING, &process_event) < 0 )
-	{	
+	{
 		fputs("Error: Unable to initialize ISR\n", stderr);
 		return EXIT_FAILURE;
 	}
 
-	process_input(config); 
+	process_input(config);
 
 	if (ir_Enable)
 	{
@@ -881,7 +881,7 @@ int main(int argc, char* argv[])
 		close(lircfd);
 	}
 	close(rafd);
-	unlink(UNIX_SOCK_PATH); 
+	unlink(UNIX_SOCK_PATH);
 	saveVol(vol);
 
 	return(0);
