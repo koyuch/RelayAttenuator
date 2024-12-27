@@ -30,24 +30,31 @@ Volume control:
 Requiments:
 
 	Attenuator software requires  WiringPi & LIRC libraries.
+    Also some packages for building - i.e:
+    ```bash
+        sudo apt install autoconf libtool xsltproc liblirc-dev liblircclient-dev
+    ```
 
 WiringPi(On RPi):
 
-	$ cd /usr/local/
-	$ git clone git://git.drogon.net/wiringPi
-	$ cd wiringPi
-	$ git pull origin
-	$ ./build 
+	$ git clone https://github.com/WiringPi/WiringPi.git
+	$ cd WiringPi
+
+    # build the package
+    $ ./build debian
+    $ mv debian-template/wiringpi_3.10_arm64.deb .
+
+    # install it
+    $ sudo apt install ./wiringpi_3.10_arm64.deb
 
 
 LIRC: 
 
-	$ cd /usr/local/
-	$ git clone https://github.com/FernetMenta/lirc.git
+	$ git clone git://git.code.sf.net/p/lirc/git lirc
 
-  Download:
+  Download RelayAttenuator repo:
 
-	$ cd /usr/local/lirc/daemons/
+	$ cd lirc/daemons/
 	$ git clone https://github.com/allocom/RelayAttenuator.git
 	Files will be downloaded at daemons/RelayAttenuator
 
@@ -56,13 +63,13 @@ LIRC:
 
      After download, follow below commands:
 
-	$ cd /usr/local/lirc
+	$ cd ../.. (root of lirc repo)
 	
 	Add "daemons/RelayAttenuator/Makefile" under "AC_CONFIG_FILES" in the file ./configure.ac
 	Add "daemons/RelayAttenuator" under SUBDIRS in the file ./Makefile.am
 	
 	$ sudo ./autogen.sh
-	$ sudo ./configure --with-syslog --with-driver=userspace
+	$ sudo ./configure
 	$ sudo make
 	$ sudo make install 
 
@@ -80,6 +87,6 @@ Execution:
 
 	Make sure lircd is running & just execute the server program
 
-	$ r_attenu
+	$ r_attenu -d
 
-	To execute the server on bootup, add "r_attenu > /dev/null 2>&1 " in /etc/rc.local
+	To execute the server on bootup, add "r_attenu -d > /dev/null 2>&1 " in /etc/rc.local
