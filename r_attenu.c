@@ -63,7 +63,9 @@ static const struct option options[] = {
 };
 
 #define INT_GPIO 	5
+#ifndef PACKET_SIZE
 #define PACKET_SIZE 	256
+#endif
 #define TIMEOUT 	3 /* three seconds */
 #define DEFAULT_VOL	0x1f
 #define IRCTL_FILE	"/etc/r_attenu.conf"
@@ -715,7 +717,7 @@ static void setup_handlers(void)
 	sigaction(SIGTERM, &sa, NULL);
 }
 
-inline void sigalrm(int sig)
+static inline void sigalrm(int sig)
 {
 	timeout = 1;
 }
